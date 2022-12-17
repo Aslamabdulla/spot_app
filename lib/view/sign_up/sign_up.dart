@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_7/view/login/widgets/scroll_behaviour.dart';
+import 'package:flutter_application_7/view/sign_up/widgets/text_form_fields.dart';
 import 'package:get/get.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  SignUpScreenState createState() => SignUpScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen>
+class SignUpScreenState extends State<SignUpScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController controller;
   late Animation<double> opacity;
   late Animation<double> transform;
-
+  final formKey = GlobalKey<FormState>();
   @override
   void initState() {
     controller = AnimationController(
@@ -66,13 +67,13 @@ class LoginScreenState extends State<LoginScreen>
             height: size.height,
             child: Container(
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xffFEC37B),
-                    Color(0xffFF4184),
+                    const Color(0xff07A3B2).withOpacity(.5),
+                    const Color(0xffD9ECC7).withOpacity(.2),
                   ],
                 ),
               ),
@@ -93,85 +94,60 @@ class LoginScreenState extends State<LoginScreen>
                         ),
                       ],
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const SizedBox(),
-                        Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black.withOpacity(.7),
-                          ),
-                        ),
-                        const SizedBox(),
-                        component1(
-                            Icons.email_outlined, 'Email...', false, true),
-                        component1(
-                            Icons.lock_outline, 'Password...', true, false),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            component2(
-                              'LOGIN',
-                              2.6,
-                              () {
-                                HapticFeedback.vibrate();
-                              },
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const SizedBox(),
+                          Text(
+                            'SIGN UP',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black.withOpacity(.7),
                             ),
-                          ],
-                        ),
-                        const SizedBox(),
-                        RichText(
-                          text: TextSpan(
-                            text: 'Create a new Account',
-                            style: const TextStyle(
-                              color: Colors.blueAccent,
-                              fontSize: 15,
-                            ),
-                            recognizer: TapGestureRecognizer()..onTap = () {},
                           ),
-                        ),
-                        const SizedBox(),
-                      ],
+                          const SizedBox(),
+                          username(
+                              Icons.account_circle_outlined, 'User name...'),
+                          email(Icons.email_outlined, 'Email...'),
+                          password(Icons.lock_outline, 'Password...'),
+                          phonenumber(
+                              Icons.account_circle_outlined, 'Phone number...'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              component2(
+                                'SIGN UP',
+                                2.6,
+                                () {
+                                  HapticFeedback.vibrate();
+                                  formKey.currentState!.validate();
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(),
+                          RichText(
+                            text: TextSpan(
+                              text: 'Create a new Account',
+                              style: const TextStyle(
+                                color: Colors.blueAccent,
+                                fontSize: 15,
+                              ),
+                              recognizer: TapGestureRecognizer()..onTap = () {},
+                            ),
+                          ),
+                          const SizedBox(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget component1(
-      IconData icon, String hintText, bool isPassword, bool isEmail) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.width / 8,
-      width: size.width / 1.22,
-      alignment: Alignment.center,
-      padding: EdgeInsets.only(right: size.width / 30),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(.05),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        style: TextStyle(color: Colors.black.withOpacity(.8)),
-        obscureText: isPassword,
-        keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            icon,
-            color: Colors.black.withOpacity(.7),
-          ),
-          border: InputBorder.none,
-          hintMaxLines: 1,
-          hintText: hintText,
-          hintStyle:
-              TextStyle(fontSize: 14, color: Colors.black.withOpacity(.5)),
         ),
       ),
     );
