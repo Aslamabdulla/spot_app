@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_7/common/constants/constants.dart';
+import 'package:flutter_application_7/dependency/dependency.dart';
 import 'package:flutter_application_7/view/login/widgets/scroll_behaviour.dart';
+import 'package:flutter_application_7/view/sign_up/sign_up.dart';
+import 'package:flutter_application_7/view/sign_up/widgets/text_form_fields.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+
+import '../../common/constants/common.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -16,7 +23,7 @@ class LoginScreenState extends State<LoginScreen>
   late AnimationController controller;
   late Animation<double> opacity;
   late Animation<double> transform;
-
+  final formKey = GlobalKey<FormState>();
   @override
   void initState() {
     controller = AnimationController(
@@ -53,6 +60,7 @@ class LoginScreenState extends State<LoginScreen>
   @override
   Widget build(BuildContext context) {
     Size size = Get.size;
+   
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -66,135 +74,92 @@ class LoginScreenState extends State<LoginScreen>
             height: size.height,
             child: Container(
               alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Color(0xffFEC37B),
-                    Color(0xffFF4184),
-                  ],
-                ),
-              ),
+              decoration: kBoxDecoration,
               child: Opacity(
                 opacity: opacity.value,
                 child: Transform.scale(
                   scale: transform.value,
                   child: Container(
-                    width: size.width * .9,
-                    height: size.width * 1.1,
+                    width: 370.w,
+                    height: 452.h,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: kWhite,
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(.1),
+                          color: kBlack.withOpacity(.1),
                           blurRadius: 90,
                         ),
                       ],
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const SizedBox(),
-                        Text(
-                          'Sign In',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black.withOpacity(.7),
-                          ),
-                        ),
-                        const SizedBox(),
-                        component1(
-                            Icons.email_outlined, 'Email...', false, true),
-                        component1(
-                            Icons.lock_outline, 'Password...', true, false),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            component2(
-                              'LOGIN',
-                              2.6,
-                              () {
-                                HapticFeedback.vibrate();
-                              },
+                    child: Form(
+                      key: formKey,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          const SizedBox(),
+                          Text(
+                            'LOGIN',
+                            style: TextStyle(
+                              fontSize: 20.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black.withOpacity(.7),
                             ),
-                          ],
-                        ),
-                        const SizedBox(),
-                        RichText(
-                          text: TextSpan(
-                            text: 'Create a new Account',
-                            style: const TextStyle(
-                              color: Colors.blueAccent,
-                              fontSize: 15,
-                            ),
-                            recognizer: TapGestureRecognizer()..onTap = () {},
                           ),
-                        ),
-                        const SizedBox(),
-                      ],
+                          const SizedBox(),
+                          Text(
+                            loginCtrl.user?.name == null
+                                ? "USER"
+                                : loginCtrl.user!.name!.toUpperCase(),
+                            style: kTextBoldBlack,
+                          ),
+                          email(Icons.email_outlined, 'Email...'),
+                          password(Icons.lock_outline, 'Password...'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              loginButton(
+                                'LOGIN',
+                                2.6.w,
+                                () {
+                                  HapticFeedback.vibrate();
+                                  if (formKey.currentState!.validate()) {
+                                    loginCtrl.loginUser();
+                                  } else {
+                                    Get.snackbar(
+                                        "Error", "Please Check all the field",
+                                        colorText: kRed);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                          const SizedBox(),
+                          RichText(
+                            text: TextSpan(
+                              text: 'Create a new Account',
+                              style: TextStyle(
+                                color: Colors.blueAccent,
+                                fontSize: 16.sp,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Get.offAll(() => const SignUpScreen(),
+                                      transition: Transition.fadeIn,
+                                      duration:
+                                          const Duration(milliseconds: 400));
+                                },
+                            ),
+                          ),
+                          const SizedBox(),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget component1(
-      IconData icon, String hintText, bool isPassword, bool isEmail) {
-    Size size = MediaQuery.of(context).size;
-    return Container(
-      height: size.width / 8,
-      width: size.width / 1.22,
-      alignment: Alignment.center,
-      padding: EdgeInsets.only(right: size.width / 30),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(.05),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: TextField(
-        style: TextStyle(color: Colors.black.withOpacity(.8)),
-        obscureText: isPassword,
-        keyboardType: isEmail ? TextInputType.emailAddress : TextInputType.text,
-        decoration: InputDecoration(
-          prefixIcon: Icon(
-            icon,
-            color: Colors.black.withOpacity(.7),
-          ),
-          border: InputBorder.none,
-          hintMaxLines: 1,
-          hintText: hintText,
-          hintStyle:
-              TextStyle(fontSize: 14, color: Colors.black.withOpacity(.5)),
-        ),
-      ),
-    );
-  }
-
-  Widget component2(String string, double width, VoidCallback voidCallback) {
-    Size size = MediaQuery.of(context).size;
-    return InkWell(
-      highlightColor: Colors.transparent,
-      splashColor: Colors.transparent,
-      onTap: voidCallback,
-      child: Container(
-        height: size.width / 8,
-        width: size.width / width,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: const Color(0xff4796ff),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          string,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
     );

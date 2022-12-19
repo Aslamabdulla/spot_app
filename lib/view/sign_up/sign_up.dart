@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_7/common/constants/constants.dart';
+import 'package:flutter_application_7/dependency/dependency.dart';
+import 'package:flutter_application_7/view/login/login.dart';
 import 'package:flutter_application_7/view/login/widgets/scroll_behaviour.dart';
 import 'package:flutter_application_7/view/sign_up/widgets/text_form_fields.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -54,6 +58,7 @@ class SignUpScreenState extends State<SignUpScreen>
   @override
   Widget build(BuildContext context) {
     Size size = Get.size;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -69,11 +74,11 @@ class SignUpScreenState extends State<SignUpScreen>
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                   colors: [
-                    const Color(0xff07A3B2).withOpacity(.5),
-                    const Color(0xffD9ECC7).withOpacity(.2),
+                    Color(0xff07A3B2).withOpacity(.5),
+                    Color(0xffD9ECC7).withOpacity(.2),
                   ],
                 ),
               ),
@@ -82,14 +87,14 @@ class SignUpScreenState extends State<SignUpScreen>
                 child: Transform.scale(
                   scale: transform.value,
                   child: Container(
-                    width: size.width * .9,
-                    height: size.width * 1.1,
+                    width: 370.w,
+                    height: 617.h,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: kWhite,
                       borderRadius: BorderRadius.circular(15),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(.1),
+                          color: kBlack.withOpacity(.1),
                           blurRadius: 90,
                         ),
                       ],
@@ -103,9 +108,9 @@ class SignUpScreenState extends State<SignUpScreen>
                           Text(
                             'SIGN UP',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 20.sp,
                               fontWeight: FontWeight.w600,
-                              color: Colors.black.withOpacity(.7),
+                              color: kBlack.withOpacity(.7),
                             ),
                           ),
                           const SizedBox(),
@@ -118,12 +123,19 @@ class SignUpScreenState extends State<SignUpScreen>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              component2(
+                              loginButton(
                                 'SIGN UP',
                                 2.6,
                                 () {
-                                  HapticFeedback.vibrate();
-                                  formKey.currentState!.validate();
+                                  if (formKey.currentState!.validate()) {
+                                    loginCtrl.saveUser();
+                                    loginCtrl.inIt();
+                                    formKey.currentState!.reset();
+                                    Get.snackbar(
+                                        "Success", "Successfully Registed");
+                                  } else {
+                                    return;
+                                  }
                                 },
                               ),
                             ],
@@ -131,12 +143,17 @@ class SignUpScreenState extends State<SignUpScreen>
                           const SizedBox(),
                           RichText(
                             text: TextSpan(
-                              text: 'Create a new Account',
-                              style: const TextStyle(
+                              text: 'Already registered Login',
+                              style: TextStyle(
                                 color: Colors.blueAccent,
-                                fontSize: 15,
+                                fontSize: 15.sp,
                               ),
-                              recognizer: TapGestureRecognizer()..onTap = () {},
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Get.offAll(() => LoginScreen(),
+                                      duration: Duration(milliseconds: 400),
+                                      transition: Transition.fadeIn);
+                                },
                             ),
                           ),
                           const SizedBox(),
@@ -148,29 +165,6 @@ class SignUpScreenState extends State<SignUpScreen>
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget component2(String string, double width, VoidCallback voidCallback) {
-    Size size = MediaQuery.of(context).size;
-    return InkWell(
-      highlightColor: Colors.transparent,
-      splashColor: Colors.transparent,
-      onTap: voidCallback,
-      child: Container(
-        height: size.width / 8,
-        width: size.width / width,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: const Color(0xff4796ff),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          string,
-          style:
-              const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
     );
